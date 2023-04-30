@@ -26,14 +26,11 @@ class ProductManager {
             const todosLosProductos = JSON.parse(productos);
             return todosLosProductos;
         }
-        console.log('error');
+        return 'error';
     }
     async getProductById(id) {
         let allProducts = await this.getProducts();
         const prodToGet = allProducts.find(prod => prod.id === id);
-        if (!prodToGet) {
-            return console.error('no hay prod con este id');
-        }
         return prodToGet;
     }
     async updateProduct(id, updateProps) {
@@ -41,22 +38,24 @@ class ProductManager {
         let newProd = prodToUpdate.find(prod => prod.id === id);
         Object.assign(newProd, updateProps);
         await fs.promises.writeFile(this.path, JSON.stringify(prodToUpdate, null, 2), "utf-8");
+        return;
     }
     async deleteProduct(id) {
         let todosLosProductos = await this.getProducts();
-        let prodToDelete = await this.getProductById(id);
-        const index = todosLosProductos.findIndex(prod => prod.id === prodToDelete.id)
+        let newProd = todosLosProductos.find(prod => prod.id === id);
+        const index = todosLosProductos.findIndex(prod => prod.id === newProd.id)
         if (index !== -1) {
             todosLosProductos.splice(index, 1);
             await fs.promises.writeFile(this.path, JSON.stringify(todosLosProductos, null, 2), "utf-8");
             return;
         }
-        console.log('error');
+        return 'error';
     }
 }
 
 const productManager = new ProductManager("products.json");
-productManager.addProduct({
+const funcionAsync = async () => { 
+await productManager.addProduct({
     title: 'Producto 1',
     description: 'Esto es el primer producto',
     price: 100,
@@ -64,7 +63,7 @@ productManager.addProduct({
     code: 1,
     stock: 15
 });
-productManager.addProduct({
+await productManager.addProduct({
     title: 'Producto 2',
     description: 'Esto es el segundo producto',
     price: 900,
@@ -72,7 +71,7 @@ productManager.addProduct({
     code: 2,
     stock: 5
 });
-productManager.addProduct({
+await productManager.addProduct({
     title: 'Producto 3',
     description: 'Esto es el tercer producto',
     price: 20,
@@ -80,15 +79,19 @@ productManager.addProduct({
     code: 3,
     stock: 90
 });
+}
 
+funcionAsync();
 
-
-productManager.getProducts();
-productManager.getProductById(3);
-productManager.updateProduct(1, {
+const callFunction = async()=>{
+await productManager.getProducts();
+await productManager.getProductById(1);
+await productManager.deleteProduct(2);
+productManager.updateProduct(3, {
     title: 'nuevo producto',
     stock: 0,
     description: 'nueva description',
     code: 85
 });
-productManager.deleteProduct(2);
+}
+callFunction();
