@@ -87,7 +87,7 @@ const callFunction = async()=>{
 await productManager.getProducts();
 await productManager.getProductById(1);
 await productManager.deleteProduct(2);
-productManager.updateProduct(3, {
+await productManager.updateProduct(3, {
     title: 'nuevo producto',
     stock: 0,
     description: 'nueva description',
